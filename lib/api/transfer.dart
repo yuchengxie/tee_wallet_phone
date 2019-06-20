@@ -200,7 +200,7 @@ List<int> prepare_txn1_(pay_to, ext_in, submit, scan_count, min_utxo, max_utxo,
 List<int> submit_txn_(msg, submit) {
   final command = 'makesheet';
   final payload = makeSheetpayload(msg);
-  final binary = makeSheetBinary(payload, command);
+  final binary = wholePayload(payload, command);
   return binary;
 }
 

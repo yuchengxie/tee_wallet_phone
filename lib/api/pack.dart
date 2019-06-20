@@ -6,7 +6,7 @@ import 'package:crypto/src/sha256.dart';
 import '../model/message.dart';
 
 void main() {
-  makeSheetBinary([], 'makesheet');
+  // makeSheetBinary([], 'makesheet');
 }
 
 ByteDataWriter _write;
@@ -27,7 +27,7 @@ List<int> getPayload(List<int> data) {
   return payload;
 }
 
-List<int> makeSheetBinary(List<int> payload, String command) {
+List<int> wholePayload(List<int> payload, String command) {
   ByteDataWriter w = ByteDataWriter();
   //0-4 magic
   w.write(_magic);
