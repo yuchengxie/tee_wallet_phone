@@ -163,7 +163,10 @@ void query_sheet(pay_to, from_uocks) async {
       tx_out: orgSheet.tx_out,
       lock_time: orgSheet.lock_time,
       sig_raw: '');
-  // var txn_payload=
+  List<int> txn_payload = txnPayload(txn);
+  txn_payload=wholePayload(txn_payload, txn.command);
+  var t = bytesToHexStr(txn_payload);
+  print('txn_payload:${t}');
 }
 
 // void waitSubmit(List<int> bytes) {}

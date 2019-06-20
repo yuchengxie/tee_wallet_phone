@@ -5,12 +5,75 @@ import 'package:tee_wallet/api/utils.dart';
 import 'package:crypto/src/sha256.dart';
 import '../model/message.dart';
 
-void main() {
-  // makeSheetBinary([], 'makesheet');
-}
-
 ByteDataWriter _write;
 final _magic = [0xf9, 0x6e, 0x62, 0x74];
+
+/*
+ * 提交交易二进制组包 
+ */
+List<int> txnPayload(Transaction txn) {
+  _write = ByteDataWriter();
+  _write.writeUint32(txn.version);
+  _writeTxIns(txn.tx_in);
+  _writeTxOuts(txn.tx_out);
+  _write.writeUint32(txn.lock_time);
+  _writeVarString(txn.sig_raw);
+  return _write.toBytes();
+}
+
+/*
+ * 发送表单二进制组包 
+ */
+List<int> makeSheetpayload(MakeSheet msg) {
+  _write = ByteDataWriter();
+  _write.writeUint16(msg.vcn);
+  _write.writeUint32(msg.sequence);
+  _writepayfrom(msg.pay_from);
+  _writepayto(msg.pay_to);
+  _write.writeUint16(msg.scan_count);
+  _write.writeUint64(msg.min_utxo);
+  _write.writeUint64(msg.max_utxo);
+  _write.writeUint32(msg.sort_flag);
+  _writelastuocks(msg.last_uocks);
+  return _write.toBytes();
+}
+
+List<int> flexTxnPayload(FlexTxn msg) {
+  _write = ByteDataWriter();
+  _write.writeUint32(msg.version);
+  _writeTxIns(msg.tx_in);
+  _writeTxOuts(msg.tx_out);
+  _write.writeUint32(msg.lock_time);
+  return _write.toBytes();
+}
+
+Uint8List script_payload(subscript, txns_ver, List<TxIn> txns_in,
+    List<TxOut> txns_out, lock_time, input_index, hash_type) {
+  var tx_outs = txns_out;
+  var tx_ins = [];
+  if ((hash_type & 0x1F) == 0x01) {
+    for (var index = 0; index < txns_in.length; index++) {
+      var tx_in = txns_in[index];
+      String script = '';
+      if (index == input_index) {
+        script = subscript;
+      }
+      print('>>> script:${script}---${script.length}');
+      tx_in.sig_script = script;
+      tx_ins.add(tx_in);
+    }
+  }
+  if (tx_ins == null || tx_outs == null) {
+    throw 'tx_ins txouts can not be null';
+  }
+  var tx_copy = FlexTxn(
+      version: txns_ver, tx_in: txns_in, tx_out: tx_outs, lock_time: lock_time);
+  List<int> payload = flexTxnPayload(tx_copy);
+  var w = new ByteDataWriter();
+  w.write(payload);
+  w.writeUint32(hash_type);
+  return w.toBytes();
+}
 
 List<int> getPayload(List<int> data) {
   if (data.sublist(0, 4).toString() != _magic.toString()) {
@@ -42,60 +105,6 @@ List<int> wholePayload(List<int> payload, String command) {
   w.write(checksum);
   w.write(payload);
   return w.toBytes();
-}
-
-Uint8List script_payload(subscript, txns_ver, List<TxIn> txns_in,
-    List<TxOut> txns_out, lock_time, input_index, hash_type) {
-  var tx_outs = txns_out;
-  var tx_ins = [];
-  if ((hash_type & 0x1F) == 0x01) {
-    for (var index = 0; index < txns_in.length; index++) {
-      var tx_in = txns_in[index];
-      String script = '';
-      if (index == input_index) {
-        script = subscript;
-      }
-      print('>>> script:${script}---${script.length}');
-      tx_in.sig_script = script;
-      tx_ins.add(tx_in);
-    }
-  }
-  if (tx_ins == null || tx_outs == null) {
-    throw 'tx_ins txouts can not be null';
-  }
-
-  var tx_copy = FlexTxn(
-      version: txns_ver, tx_in: txns_in, tx_out: tx_outs, lock_time: lock_time);
-  List<int> payload = compayloadTran(tx_copy);
-
-  var w = new ByteDataWriter();
-  w.write(payload);
-  w.writeUint32(hash_type);
- 
-  return w.toBytes();
-}
-
-Uint8List compayloadTran(FlexTxn msg) {
-  _write = ByteDataWriter();
-  _write.writeUint32(msg.version);
-  _writeTxIns(msg.tx_in);
-  _writeTxOuts(msg.tx_out);
-  _write.writeUint32(msg.lock_time);
-  return _write.toBytes();
-}
-
-List<int> makeSheetpayload(MakeSheet msg) {
-  _write = ByteDataWriter();
-  _write.writeUint16(msg.vcn);
-  _write.writeUint32(msg.sequence);
-  _writepayfrom(msg.pay_from);
-  _writepayto(msg.pay_to);
-  _write.writeUint16(msg.scan_count);
-  _write.writeUint64(msg.min_utxo);
-  _write.writeUint64(msg.max_utxo);
-  _write.writeUint32(msg.sort_flag);
-  _writelastuocks(msg.last_uocks);
-  return _write.toBytes();
 }
 
 void _writelastuocks(List<int> msg) {

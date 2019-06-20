@@ -87,6 +87,7 @@ class FlexTxn {
 }
 
 class Transaction {
+  String command='tx';
   int version;
   List<TxIn> tx_in;
   List<TxOut> tx_out;
