@@ -1,4 +1,4 @@
-import './utils.dart';
+import '../utils/utils.dart';
 import 'package:buffer/buffer.dart';
 import './opcodes.dart';
 

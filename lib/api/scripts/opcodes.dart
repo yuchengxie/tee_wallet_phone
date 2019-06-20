@@ -1,5 +1,5 @@
 
-var __all__ = ['DISABLED', 'OPCODE_NAMES', 'OP_0', 'OP_0NOTEQUAL', 'OP_1', 'OP_10',
+List __all__ = ['DISABLED', 'OPCODE_NAMES', 'OP_0', 'OP_0NOTEQUAL', 'OP_1', 'OP_10',
     'OP_11', 'OP_12', 'OP_13', 'OP_14', 'OP_15', 'OP_16', 'OP_1ADD',
     'OP_1NEGATE', 'OP_1SUB', 'OP_2', 'OP_2DIV', 'OP_2DROP', 'OP_2DUP',
     'OP_2MUL', 'OP_2OVER', 'OP_2ROT', 'OP_2SWAP', 'OP_3', 'OP_3DUP',

@@ -1,16 +1,15 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
+import 'package:crypto/src/sha256.dart';
 import 'package:bs58check/bs58check.dart' as bs58check;
 import 'package:buffer/buffer.dart';
 import 'package:http/http.dart' as http;
-import 'pack.dart';
-import 'unpack.dart';
-import 'utils.dart';
+import './pack/pack.dart';
+import './pack/unpack.dart';
 import '../model/jsonEntity.dart';
 import '../model/message.dart';
-import 'package:crypto/src/sha256.dart';
-import './opscript.dart';
+import './scripts/opscript.dart';
+import './utils/utils.dart';
 
 const WEB_SERVER_ADDR = 'http://user1-node.nb-chain.net';
 var sequence = 0,

@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:buffer/buffer.dart';
-import 'package:tee_wallet/api/utils.dart';
+import '../utils/utils.dart';
 import 'package:crypto/src/sha256.dart';
-import '../model/message.dart';
+import '../../model/message.dart';
 
 ByteDataWriter _write;
 final _magic = [0xf9, 0x6e, 0x62, 0x74];
