@@ -21,7 +21,7 @@ OrgSheet orgSheetParse(List<int> bytes) {
   int lock_time = _reader.readUint32();
   String signature = _readVarString();
 
-  OrgSheet orgSheet = OrgSheet(
+  OrgSheet _orgSheet = OrgSheet(
       sequence: sequence,
       pks_out: pks_out,
       last_uocks: last_uocks,
@@ -30,7 +30,7 @@ OrgSheet orgSheetParse(List<int> bytes) {
       tx_out: tx_out,
       lock_time: lock_time,
       signature: signature);
-  return orgSheet;
+  return _orgSheet;
 }
 
 List<TxIn> _readTxIns() {

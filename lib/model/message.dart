@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 class PayFrom {
-  var value;
-  var address;
+  int value;
+  String address;
   PayFrom({this.value, this.address});
 }
 
 class PayTo {
-  var value;
-  var address;
+  int value;
+  String address;
   PayTo({this.value, this.address});
 }
 

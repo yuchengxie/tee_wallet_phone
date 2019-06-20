@@ -1,15 +1,16 @@
 import 'dart:convert';
-import '../model/wallet.dart';
+import 'dart:typed_data';
+import 'package:bs58check/bs58check.dart' as bs58check;
 import 'package:http/http.dart' as http;
 import 'pack.dart';
 import 'unpack.dart';
-import '../model/message.dart';
 import 'utils.dart';
+import '../model/wallet.dart';
+import '../model/message.dart';
+import 'package:crypto/src/sha256.dart';
 
 const WEB_SERVER_ADDR = 'http://user1-node.nb-chain.net';
 var sequence = 0,
-    makesheet,
-    orgsheetMsg,
     _wait_submit = [],
     SHEET_CACHE_SIZE = 16,
     txn_binary,
@@ -21,8 +22,11 @@ var sequence = 0,
     pks_out0,
     hash_type = 1,
     submit = true;
-Wallet wallet;
+
+TeeWallet _wallet;
 final magic = [0xf9, 0x6e, 0x62, 0x74];
+MakeSheet makesheet;
+OrgSheet orgSheet;
 
 void main() {
   query_sheet('', '');
@@ -51,7 +55,7 @@ void query_sheet(pay_to, from_uocks) async {
   }
   String s2 = bytesToHexStr(payload);
   print('${s2}---${s2.length}');
-  OrgSheet orgSheet = orgSheetParse(payload);
+  orgSheet = orgSheetParse(payload);
   //网络获取钱包
   final url2 = 'http://127.0.0.1:3000/get_wallet';
   final response2 = await http.get(url2);
@@ -60,7 +64,38 @@ void query_sheet(pay_to, from_uocks) async {
     return;
   }
   final _json = json.decode(response2.body);
-  wallet = Wallet.fromJson(_json);
+  _wallet = TeeWallet.fromJson(_json);
+  print('wallet_json:${_json}');
+  List<int> coin_hash = hexStrToBytes(_wallet.pub_hash + '00');
+  print(coin_hash);
+
+  var d = {};
+  var _pay_to = makesheet.pay_to;
+  for (var i = 0; i < _pay_to.length; i++) {
+    var p = _pay_to[i];
+    List<int> _add = strToBytes(p.address);
+    if (p.value != 0 || _add.sublist(0, 1) != 0x6a) {
+      Uint8List ret = decode_check(p.address).sublist(1);
+      if (ret == null) {
+        continue;
+      }
+      String ret_str = bytesToHexStr(ret);
+      d[ret_str] = p.value;
+    }
+  }
+  
+  for (int idx = 0; idx < orgSheet.tx_out.length; idx++) {
+    var item = orgSheet.tx_out[idx];
+    if (item.value == 0 && item.pk_script.substring(0, 1) == '') {
+      continue;
+    }
+    //脚本相关操作 todo
+    // var addr=
+     
+    // d.remove(addr);
+  }
+
+  // String coin_hash=hexStrToBytes(wallet.pub_hash+'00');
 }
 
 // void waitSubmit(List<int> bytes) {}
@@ -80,7 +115,7 @@ List<int> prepare_txn1_(pay_to, ext_in, submit, scan_count, min_utxo, max_utxo,
   pay_to1.address = '1118hfRMRrJMgSCoV9ztyPcjcgcMZ1zThvqRDLUw3xCYkZwwTAbJ5o';
   pay_to.add(pay_to1);
 
-  MakeSheet makesheet = new MakeSheet();
+  makesheet = new MakeSheet();
   makesheet.vcn = 56026;
   makesheet.sequence = sequence;
   makesheet.pay_from = pay_from;
@@ -99,4 +134,17 @@ List<int> submit_txn_(msg, submit) {
   final payload = makeSheetpayload(msg);
   final binary = makeSheetBinary(payload, command);
   return binary;
+}
+
+Uint8List decode_check(v) {
+  // base58();
+  Uint8List a = bs58check.base58.decode(v);
+  Uint8List ret = a.sublist(0, a.length - 4);
+  Uint8List check = a.sublist(a.length - 4);
+  var checksum = sha256.convert(sha256.convert(ret).bytes).bytes.sublist(0, 4);
+  if (checksum.toString() == check.toString()) {
+    return ret;
+  } else {
+    return null;
+  }
 }
