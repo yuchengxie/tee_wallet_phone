@@ -9,7 +9,7 @@ ByteDataWriter _write;
 final _magic = [0xf9, 0x6e, 0x62, 0x74];
 
 /*
- * 提交交易二进制组包 
+ * 创建交易表单二进制组包
  */
 List<int> txnPayload(Transaction txn) {
   _write = ByteDataWriter();

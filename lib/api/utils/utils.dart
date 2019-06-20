@@ -1,24 +1,8 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
-// import 'package:buffer/buffer.dart';
 import 'package:hex/hex.dart';
-// import 'package:buffer/io_buffer.dart';
 
 final hexEn = const HexEncoder();
 final hexDe = const HexDecoder();
-void main() {
-  //6d616b657368656574000000
-  // List<int> bytes = strToBytes('makesheet',length: 12, endian: Endian.little);
-  // var bytes=utf8.encode('makesheet');
-  var bytes = strToBytes('makesheet', length: 12);
-  print(bytes);
-
-  var s = hexEn.convert(bytes);
-  var t = hexDe.convert(s);
-  print(s);
-  print(t);
-}
 
 List<int> hexStrToBytes(String hexStr) {
   return hexDe.convert(hexStr);

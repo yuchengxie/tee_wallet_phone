@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'pages/form.dart';
 import 'pages/product.dart';
 import 'pages/productinfo.dart';
@@ -15,7 +14,6 @@ final routes = {
   '/search': (context, {arguments}) => SearchPage(arguments: arguments),
 };
 
-//固定写法
 var onGenerateRoute = (RouteSettings settings) {
   // 统一处理
   final String name = settings.name;

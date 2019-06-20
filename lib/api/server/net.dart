@@ -10,7 +10,7 @@ void get_wallet() async {
   final response = await http.get(url);
   if (response.statusCode == 200) {
     final _json = json.decode(response.body);
-    final wallet = TeeWallet.fromJson(_json);
+    // final wallet = TeeWallet.fromJson(_json);
     print('wallet:${_json}');
   } else {
     throw Exception('fail to load get_wallet');
