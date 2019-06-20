@@ -21,11 +21,10 @@ var sequence = 0,
 final magic = [0xf9, 0x6e, 0x62, 0x74];
 
 void main() {
-//   query_sheet('', '');
-  print('123');
+  query_sheet('','');
 }
 
-void query_sheet(PayTo pay_to, int from_uocks) async {
+void query_sheet(pay_to,from_uocks) async {
   int ext_in = 0;
   bool submit = true;
   int scan_count = 0;
@@ -36,12 +35,12 @@ void query_sheet(PayTo pay_to, int from_uocks) async {
   var bytes1 = prepare_txn1_(pay_to, ext_in, submit, scan_count, min_utxo,
       max_utxo, sort_flag, from_uocks);
   String s1 = bytesToHexStr(bytes1);
-  print('准备发送数据1:${s1}--${s1.length}');
+  print('1准备发送数据:${s1}--${s1.length}');
   final url = WEB_SERVER_ADDR + '/txn/sheets/sheet';
   final response = await http.post(url, body: bytes1);
   final response_bytes = response.bodyBytes;
   String s = bytesToHexStr(response_bytes);
-  print('${s}---${s.length}');
+  print('1接收到数据${s}---${s.length}');
   List<int> payload = getPayload(response_bytes);
   String s2 = bytesToHexStr(payload);
   print('${s2}---${s2.length}');

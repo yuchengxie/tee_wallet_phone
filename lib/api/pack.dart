@@ -14,23 +14,22 @@ ByteDataWriter _write;
 final _magic = [0xf9, 0x6e, 0x62, 0x74];
 
 //bytes转换成一个对象
-OrgSheet orgSheetParse(List<int> bytes) {return null;}
+OrgSheet orgSheetParse(List<int> bytes) {
+  return null;
+}
 
 List<int> getPayload(List<int> data) {
-  ByteDataReader reader = ByteDataReader();
-  utf8.decode(data.sublist(0, 4));
-  if (data.sublist(0, 4) != _magic) {
+  if (data.sublist(0, 4).toString() != _magic.toString()) {
     print('data error');
-    throw Error();
+    return null;
   }
-  final checksum = sha256.convert(sha256.convert(data).bytes).bytes;
-  if (data.sublist(20, 24) != checksum) {
+  final payload = data.sublist(24);
+  final checksum = sha256.convert(sha256.convert(payload).bytes).bytes.sublist(0,4);
+  if (data.sublist(20, 24).toString() != checksum.toString()) {
     print('checksum error');
-    throw Error();
+    return null;
   }
-  // final command = data.sublist(4, 16);
-  // final msg_type = command.toString();
-  return data.sublist(24);
+  return payload;
 }
 
 List<int> makeSheetBinary(List<int> payload, String command) {
