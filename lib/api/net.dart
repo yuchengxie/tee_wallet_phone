@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../model/wallet.dart';
+import '../model/jsonEntity.dart';
 
 const WEB_SERVER_BASE = 'http://127.0.0.1:3000';
 const WEB_SERVER_ADDR = 'http://user1-node.nb-chain.net';

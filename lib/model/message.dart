@@ -77,3 +77,21 @@ class VarStrList {
   List<String> items;
   VarStrList({this.items});
 }
+
+class FlexTxn {
+  int version;
+  List<TxIn> tx_in;
+  List<TxOut> tx_out;
+  int lock_time;
+  FlexTxn({this.version, this.tx_in, this.tx_out, this.lock_time});
+}
+
+class Transaction {
+  int version;
+  List<TxIn> tx_in;
+  List<TxOut> tx_out;
+  int lock_time;
+  String sig_raw;
+  Transaction(
+      {this.version, this.tx_in, this.tx_out, this.lock_time, this.sig_raw});
+}

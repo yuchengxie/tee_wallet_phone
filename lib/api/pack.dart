@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:buffer/buffer.dart';
 import 'package:tee_wallet/api/utils.dart';
 import 'package:crypto/src/sha256.dart';
@@ -16,7 +18,8 @@ List<int> getPayload(List<int> data) {
     return null;
   }
   final payload = data.sublist(24);
-  final checksum = sha256.convert(sha256.convert(payload).bytes).bytes.sublist(0,4);
+  final checksum =
+      sha256.convert(sha256.convert(payload).bytes).bytes.sublist(0, 4);
   if (data.sublist(20, 24).toString() != checksum.toString()) {
     print('checksum error');
     return null;
@@ -39,6 +42,46 @@ List<int> makeSheetBinary(List<int> payload, String command) {
   w.write(checksum);
   w.write(payload);
   return w.toBytes();
+}
+
+Uint8List script_payload(subscript, txns_ver, List<TxIn> txns_in,
+    List<TxOut> txns_out, lock_time, input_index, hash_type) {
+  var tx_outs = txns_out;
+  var tx_ins = [];
+  if ((hash_type & 0x1F) == 0x01) {
+    for (var index = 0; index < txns_in.length; index++) {
+      var tx_in = txns_in[index];
+      String script = '';
+      if (index == input_index) {
+        script = subscript;
+      }
+      print('>>> script:${script}---${script.length}');
+      tx_in.sig_script = script;
+      tx_ins.add(tx_in);
+    }
+  }
+  if (tx_ins == null || tx_outs == null) {
+    throw 'tx_ins txouts can not be null';
+  }
+
+  var tx_copy = FlexTxn(
+      version: txns_ver, tx_in: txns_in, tx_out: tx_outs, lock_time: lock_time);
+  List<int> payload = compayloadTran(tx_copy);
+
+  var w = new ByteDataWriter();
+  w.write(payload);
+  w.writeUint32(hash_type);
+ 
+  return w.toBytes();
+}
+
+Uint8List compayloadTran(FlexTxn msg) {
+  _write = ByteDataWriter();
+  _write.writeUint32(msg.version);
+  _writeTxIns(msg.tx_in);
+  _writeTxOuts(msg.tx_out);
+  _write.writeUint32(msg.lock_time);
+  return _write.toBytes();
 }
 
 List<int> makeSheetpayload(MakeSheet msg) {
@@ -84,4 +127,39 @@ void _writepayto(List<PayTo> msg) {
     _write.writeUint8(address.length);
     _write.write(strToBytes(address));
   }
+}
+
+void _writeTxIns(List<TxIn> tx_ins) {
+  int len = tx_ins.length;
+  _write.writeUint8(len);
+  for (int i = 0; i < len; i++) {
+    TxIn txn = tx_ins[i];
+    //prev_output
+    OutPoint prev_output = txn.prev_output;
+    //固定长度不用计算长度
+    List<int> hash = hexStrToBytes(prev_output.hash);
+    _write.write(hash);
+    _write.writeUint32(prev_output.index);
+    //sig_script
+    _writeVarString(txn.sig_script);
+    //sequence
+    _write.writeUint32(txn.sequence);
+  }
+}
+
+void _writeTxOuts(List<TxOut> tx_outs) {
+  int len = tx_outs.length;
+  _write.writeUint8(len);
+  for (int i = 0; i < len; i++) {
+    TxOut tx_out = tx_outs[i];
+    _write.writeUint64(tx_out.value);
+    _writeVarString(tx_out.pk_script);
+  }
+}
+
+void _writeVarString(String hexstr) {
+  List<int> bytes = hexStrToBytes(hexstr);
+  int len = bytes.length;
+  _write.writeUint8(len);
+  _write.write(bytes);
 }

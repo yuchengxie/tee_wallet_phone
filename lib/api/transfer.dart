@@ -1,13 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:bs58check/bs58check.dart' as bs58check;
+import 'package:buffer/buffer.dart';
 import 'package:http/http.dart' as http;
 import 'pack.dart';
 import 'unpack.dart';
 import 'utils.dart';
-import '../model/wallet.dart';
+import '../model/jsonEntity.dart';
 import '../model/message.dart';
 import 'package:crypto/src/sha256.dart';
+import './opscript.dart';
 
 const WEB_SERVER_ADDR = 'http://user1-node.nb-chain.net';
 var sequence = 0,
@@ -83,19 +86,84 @@ void query_sheet(pay_to, from_uocks) async {
       d[ret_str] = p.value;
     }
   }
-  
+
   for (int idx = 0; idx < orgSheet.tx_out.length; idx++) {
     var item = orgSheet.tx_out[idx];
     if (item.value == 0 && item.pk_script.substring(0, 1) == '') {
       continue;
     }
-    //脚本相关操作 todo
-    // var addr=
-     
-    // d.remove(addr);
+    //脚本操作
+    String addr = process(item.pk_script).split(' ')[2];
+    if (addr == null) {
+      print('Error: invalid output address (idx=${idx})');
+    } else {
+      var value_ = d[addr];
+      if (value_ != null) {
+        d.remove(d[addr]);
+      } else {
+        continue;
+      }
+      if (item.value != value_) {
+        if (value_ == null && addr.substring(4) == bytesToHexStr(coin_hash)) {
+        } else {
+          print('Error: invalid output value (idx=${idx})');
+        }
+      }
+    }
   }
 
-  // String coin_hash=hexStrToBytes(wallet.pub_hash+'00');
+  for (var k in d.keys) {
+    print('${k}--${d[k]}');
+    // if(coin_hash!=addr)
+  }
+
+  var pks_out0 = orgSheet.pks_out[0].items;
+  var pks_num = pks_out0.length;
+  List<TxIn> tx_ins2 = List<TxIn>();
+  for (int idx = 0; idx < orgSheet.tx_in.length; idx++) {
+    if (idx < pks_num) {
+      TxIn tx = orgSheet.tx_in[idx];
+      int hash_type = 1;
+      Uint8List sign_payload = script_payload(pks_out0[idx], orgSheet.version,
+          orgSheet.tx_in, orgSheet.tx_out, 0, idx, hash_type);
+      String s = bytesToHexStr(sign_payload);
+      print('>>> ready sign payload:${s}---${s.length}');
+      //本地服务tee签名
+      final url_sign = 'http://127.0.0.1:3000/get_sign';
+      final sign_params = {'payload': s, 'pincode': '000000'};
+      final response_sign = await http.post(url_sign, body: sign_params);
+      if (response_sign.statusCode != 200) {
+        print('sign err');
+        return;
+      }
+      final _json_sign = json.decode(response_sign.body);
+      print('_json_sign:${_json_sign}');
+      TeeSign teeSign = TeeSign.fromJson(_json_sign);
+      print('tee_sign:${teeSign.msg}');
+      // List<int> _sig = hexStrToBytes(teeSign.msg);
+      List<int> sig = new List<int>.from(hexStrToBytes(teeSign.msg))
+        ..addAll(CHR(hash_type));
+      print('sig:${bytesToHexStr(sig)}');
+
+      List<int> sig_script = List.from(CHR(sig.length))
+        ..addAll(sig)
+        ..addAll(CHR(hexStrToBytes(_wallet.pub_key).length))
+        ..addAll(hexStrToBytes(_wallet.pub_key));
+      print('sig_script:${bytesToHexStr(sig_script)}');
+      tx_ins2.add(TxIn(
+          prev_output: tx.prev_output,
+          sig_script: bytesToHexStr(sig_script),
+          sequence: tx.sequence));
+    }
+  }
+
+  Transaction txn = Transaction(
+      version: orgSheet.version,
+      tx_in: tx_ins2,
+      tx_out: orgSheet.tx_out,
+      lock_time: orgSheet.lock_time,
+      sig_raw: '');
+  // var txn_payload=
 }
 
 // void waitSubmit(List<int> bytes) {}
@@ -147,4 +215,21 @@ Uint8List decode_check(v) {
   } else {
     return null;
   }
+}
+
+List<int> CHR(int value) {
+  var w = ByteDataWriter();
+  w.writeUint8(value);
+  return w.toBytes();
+}
+
+List<int> get_sig_script(
+    List<int> sig_len, List<int> sig, List<int> pubkey_len, List<int> pub_key) {
+  // var w = ByteDataWriter();
+  // w.write(sig_len);
+  // w.write(sig);
+  // w.write(pubkey_len);
+  // w.write(pub_key);
+  // return w.toBytes();
+  // rnew
 }
