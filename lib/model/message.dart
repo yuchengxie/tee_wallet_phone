@@ -36,7 +36,7 @@ class MakeSheet {
 
 class OrgSheet {
   int sequence;
-  List<List<String>> pks_out;
+  List<VarStrList> pks_out;
   List<int> last_uocks;
   int version;
   List<TxIn> tx_in;
@@ -52,15 +52,10 @@ class OrgSheet {
       this.tx_out,
       this.lock_time,
       this.signature});
-  @override
-  String toString() {
-    print('this:$this');
-    return jsonEncode(this);
-  }
 }
 
 class OutPoint {
-  List<int> hash;
+  String hash;
   int index;
   OutPoint({this.hash, this.index});
 }
@@ -76,4 +71,9 @@ class TxOut {
   int value;
   String pk_script;
   TxOut({this.value, this.pk_script});
+}
+
+class VarStrList {
+  List<String> items;
+  VarStrList({this.items});
 }

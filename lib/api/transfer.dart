@@ -1,7 +1,9 @@
+import 'dart:convert';
+import '../model/wallet.dart';
 import 'package:http/http.dart' as http;
 import 'pack.dart';
 import 'unpack.dart';
-import 'package:buffer/buffer.dart';
+import '../model/message.dart';
 import 'utils.dart';
 
 const WEB_SERVER_ADDR = 'http://user1-node.nb-chain.net';
@@ -19,6 +21,7 @@ var sequence = 0,
     pks_out0,
     hash_type = 1,
     submit = true;
+Wallet wallet;
 final magic = [0xf9, 0x6e, 0x62, 0x74];
 
 void main() {
@@ -48,9 +51,16 @@ void query_sheet(pay_to, from_uocks) async {
   }
   String s2 = bytesToHexStr(payload);
   print('${s2}---${s2.length}');
-
-  orgSheetParse(payload);
-  
+  OrgSheet orgSheet = orgSheetParse(payload);
+  //网络获取钱包
+  final url2 = 'http://127.0.0.1:3000/get_wallet';
+  final response2 = await http.get(url2);
+  if (response2.statusCode != 200) {
+    print('not found wallet');
+    return;
+  }
+  final _json = json.decode(response2.body);
+  wallet = Wallet.fromJson(_json);
 }
 
 // void waitSubmit(List<int> bytes) {}
