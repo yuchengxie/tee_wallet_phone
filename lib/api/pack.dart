@@ -13,11 +13,6 @@ void main() {
 ByteDataWriter _write;
 final _magic = [0xf9, 0x6e, 0x62, 0x74];
 
-//bytes转换成一个对象
-OrgSheet orgSheetParse(List<int> bytes) {
-  return null;
-}
-
 List<int> getPayload(List<int> data) {
   if (data.sublist(0, 4).toString() != _magic.toString()) {
     print('data error');

@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'pack.dart';
+import 'unpack.dart';
 import 'package:buffer/buffer.dart';
 import 'utils.dart';
 
@@ -21,10 +22,10 @@ var sequence = 0,
 final magic = [0xf9, 0x6e, 0x62, 0x74];
 
 void main() {
-  query_sheet('','');
+  query_sheet('', '');
 }
 
-void query_sheet(pay_to,from_uocks) async {
+void query_sheet(pay_to, from_uocks) async {
   int ext_in = 0;
   bool submit = true;
   int scan_count = 0;
@@ -42,8 +43,14 @@ void query_sheet(pay_to,from_uocks) async {
   String s = bytesToHexStr(response_bytes);
   print('1接收到数据${s}---${s.length}');
   List<int> payload = getPayload(response_bytes);
+  if (payload == null) {
+    return;
+  }
   String s2 = bytesToHexStr(payload);
   print('${s2}---${s2.length}');
+
+  orgSheetParse(payload);
+  
 }
 
 // void waitSubmit(List<int> bytes) {}
