@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../api/server/net.dart';
+import '../../api/transfer.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -48,6 +49,14 @@ class _HomePageState extends State<HomePage> {
             child: Text('网络请求: get_block'),
             onPressed: () {
               get_block();
+            },
+            color: Theme.of(context).accentColor,
+            textTheme: ButtonTextTheme.primary,
+          ),
+          RaisedButton(
+            child: Text('发起一笔交易'),
+            onPressed: () {
+              query_sheet('', '');
             },
             color: Theme.of(context).accentColor,
             textTheme: ButtonTextTheme.primary,
