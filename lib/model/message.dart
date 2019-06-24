@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class PayFrom {
   int value;
   String address;
@@ -35,9 +33,11 @@ class MakeSheet {
 }
 
 class OrgSheet {
+  static String command = 'orgsheet';
   int sequence;
   List<VarStrList> pks_out;
-  List<int> last_uocks;
+  // List<int> last_uocks;
+  List<List<int>> last_uocks;
   int version;
   List<TxIn> tx_in;
   List<TxOut> tx_out;
@@ -87,7 +87,7 @@ class FlexTxn {
 }
 
 class Transaction {
-  String command='tx';
+  String command = 'tx';
   int version;
   List<TxIn> tx_in;
   List<TxOut> tx_out;
@@ -95,4 +95,19 @@ class Transaction {
   String sig_raw;
   Transaction(
       {this.version, this.tx_in, this.tx_out, this.lock_time, this.sig_raw});
+}
+
+class UdpConfirm {
+  static String command = 'confirm';
+  String hash;
+  int arg;
+  UdpConfirm({this.hash, this.arg});
+}
+
+class UdpReject {
+  static String command = 'reject';
+  int sequence;
+  String message;
+  String source;
+  UdpReject({this.sequence, this.message, this.source});
 }

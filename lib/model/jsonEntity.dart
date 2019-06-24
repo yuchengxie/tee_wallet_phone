@@ -26,3 +26,12 @@ class TeeSign {
       : msg = json['msg'],
         status = json['status'];
 }
+
+class TeeVerifySign {
+  String msg;
+  int status;
+  TeeVerifySign({this.msg, this.status});
+  TeeVerifySign.fromJson(Map<String, dynamic> json)
+      : msg = json['msg'],
+        status = json['status'];
+}

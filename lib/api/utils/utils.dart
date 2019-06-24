@@ -12,6 +12,10 @@ String bytesToHexStr(List<int> bytes) {
   return hexEn.convert(bytes);
 }
 
+String bytesToStr(List<int> bytes) {
+  return utf8.decode(bytes);
+}
+
 /*
  * 将字符串转为(固定长度)的bytes类型
  */
