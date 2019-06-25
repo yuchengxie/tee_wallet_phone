@@ -55,12 +55,25 @@ class _HomePageState extends State<HomePage> {
           ),
           RaisedButton(
             child: Text('发起一笔交易'),
+            onPressed: null,
+            color: Theme.of(context).accentColor,
+            textTheme: ButtonTextTheme.primary,
+          ),
+          RaisedButton(
+            child: Text('按钮测试效果'),
             onPressed: () {
-              query_sheet('', '');
+              // query_sheet('', '');
+              Navigator.pushNamed(context, '/button');
             },
             color: Theme.of(context).accentColor,
             textTheme: ButtonTextTheme.primary,
           ),
+          RaisedButton(
+            child: Text('表单组件'),
+            onPressed: (){
+              Navigator.pushNamed(context, '/textfield');
+            },
+          )
         ],
       ),
     );

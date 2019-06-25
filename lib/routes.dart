@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tee_wallet/pages/buttonpage.dart';
+import 'package:tee_wallet/pages/tabs/settings.dart';
+import 'package:tee_wallet/pages/user.dart';
 import 'pages/form.dart';
+import 'pages/mtextfield.dart';
 import 'pages/product.dart';
 import 'pages/productinfo.dart';
 import 'pages/search.dart';
@@ -12,6 +16,10 @@ final routes = {
   '/productinfo': (context,{arguments}) => ProductInfoPage(arguments: arguments),
   '/form': (context) => FormPage(),
   '/search': (context, {arguments}) => SearchPage(arguments: arguments),
+  '/user':(context)=>UserPage(),
+  '/set':(context)=>SettingPage(),
+  '/button':(context)=>ButtonPage(),
+  '/textfield':(context,{arguments})=>TextFieldPage()
 };
 
 var onGenerateRoute = (RouteSettings settings) {

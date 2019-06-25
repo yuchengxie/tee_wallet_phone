@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ProductInfoPage extends StatefulWidget {
-  Map arguments;
+  final Map arguments;
   ProductInfoPage({Key key, this.arguments}) : super(key: key);
 
   _ProductInfoPageState createState() =>

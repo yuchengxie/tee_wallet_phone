@@ -10,18 +10,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // home: Tabs(),
-      initialRoute: '/',
-      onGenerateRoute: onGenerateRoute
-      // routes: {
-      //   '/form': (context, {arguments}) => FormPage(),
-      //   '/search': (context, {arguments}) => SearchPage(arguments: arguments)
-      // },
-      // onGenerateRoute: (RouteSettings settings){
-      //   print('123');
-      // },
-      // onGenerateRoute: (RouteSettings settings) {
-      //   print('123');
+        // home: Tabs(),
+        initialRoute: '/',
+        // initialRoute: '/button',
+        onGenerateRoute: onGenerateRoute
+        // routes: {
+        //   '/form': (context, {arguments}) => FormPage(),
+        //   '/search': (context, {arguments}) => SearchPage(arguments: arguments)
+        // },
+        // onGenerateRoute: (RouteSettings settings){
+        //   print('123');
+        // },
+        // onGenerateRoute: (RouteSettings settings) {
+        //   print('123');
         // final String name = settings.name;
         // final Function pageControlBuilder = this.routes[name];
         // print(settings.name);
@@ -34,8 +35,8 @@ class MyApp extends StatelessWidget {
         //     return route;
         //   }
         // }
-      // },
-    );
+        // },
+        );
   }
 }
 
